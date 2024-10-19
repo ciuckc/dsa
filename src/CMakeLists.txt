@@ -17,4 +17,5 @@ target_include_directories(
   BinaryArray
   TopKElementsInList
   Algorithm
+  PriorityQueue
 )

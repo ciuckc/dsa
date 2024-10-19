@@ -5,11 +5,22 @@
 #ifndef ALGORITHM_HPP
 #define ALGORITHM_HPP
 
-#include <iostream>
-#include <utility>
-
 namespace CS
 {
+    namespace detail
+    {
+        template <typename RandomIt, typename Distance, typename Compare>
+        constexpr void push_heap(RandomIt first, Distance top_index, Distance len, Compare comp)
+        {
+            auto parent = (len - 1) / 2;
+            while (top_index < len && comp(*(first + parent), *(first + len)))
+            {
+                std::swap(*(first + parent), *(first + len));
+                len = parent;
+                parent = (parent - 1) / 2;
+            }
+        }
+    }
 
     template <typename RandomIt>
     constexpr void make_heap(RandomIt first, RandomIt last)
@@ -20,21 +31,53 @@ namespace CS
     template <typename RandomIt, typename Compare>
     constexpr void make_heap(RandomIt first, RandomIt last, Compare comp)
     {
-        if (first == last)
+        auto distance = last - first;
+        if (distance <= 1)
         {
             return;
         }
-        auto size = last - first - 1;
-        for (auto curr = first + size; curr != first; --curr)
+        auto len = distance - 1;
+        while (len > 0)
         {
-            auto curr_node = curr;
-            while (first < curr_node && !comp(*curr_node, *(first + (curr_node - first) / 2)))
-            {
-                using std::swap;
-                swap(*curr_node, *(first + (curr_node - first) / 2));
-                curr_node =  first + (curr_node - first) / 2;
-            }
+            detail::push_heap(first, decltype(len)(0), len, comp);
+            --len;
         }
+    }
+
+    template <typename RandomIt>
+    constexpr void push_heap(RandomIt first, RandomIt last)
+    {
+        push_heap(first, last, std::less{});
+    }
+
+    template <typename RandomIt, typename Compare>
+    constexpr void push_heap(RandomIt first, RandomIt last, Compare comp)
+    {
+        auto distance = first - last;
+        if (distance < 2)
+        {
+            return;
+        }
+        auto len = len - 1;
+        detail::push_heap(first, decltype(len)(0), len, comp);
+    }
+
+    template<typename RandomIt>
+    constexpr void pop_heap(RandomIt first, RandomIt last)
+    {
+        pop_heap(first, last, std::less{});
+    }
+    template<typename RandomIt, class Compare>
+    constexpr void pop_heap(RandomIt first, RandomIt last, Compare comp)
+    {
+        auto distance = last - first;
+        if (distance < 2)
+        {
+            return;
+        }
+        auto len = distance - 1;
+        std::swap(*first, *(first + len));
+        CS::make_heap(first, first + len, comp);
     }
 };
 #endif //ALGORITHM_HPP
