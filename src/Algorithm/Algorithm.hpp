@@ -10,8 +10,15 @@
 
 namespace CS
 {
+
+    template <typename RandomIt>
+    constexpr void make_heap(RandomIt first, RandomIt last)
+    {
+        make_heap(first, last, std::less{});
+    }
+
     template <typename RandomIt, typename Compare>
-    void make_heap(RandomIt first, RandomIt last, Compare comp)
+    constexpr void make_heap(RandomIt first, RandomIt last, Compare comp)
     {
         if (first == last)
         {
